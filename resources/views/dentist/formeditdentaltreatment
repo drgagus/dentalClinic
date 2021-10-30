@@ -1,0 +1,192 @@
+@extends ('../layouts/dentalclinic')
+
+
+@section('title', 'Dentist')
+
+
+@section('navigation')
+@include ('dentist/navigation')
+@endsection
+
+
+
+@section('content')
+<div class="container">
+    <div class="row">
+        <div class="col-lg-12">
+
+        <div class="card border-primary mb-3">
+      <div class="card-header">
+<div class="row">
+<div class="col-lg-6">
+<ul class="list-group">
+  <li class="list-group-item d-flex justify-content-between align-items-center">
+    Nama
+    <span class="btn btn-outline-dark">{{$patient->nama}}</span>
+  </li>
+  <li class="list-group-item d-flex justify-content-between align-items-center">
+    Umur
+    <span class="btn btn-outline-dark">{{$dentalrecord->usiatahun}} Tahun {{$dentalrecord->usiabulan}} Bulan {{$dentalrecord->usiahari}} Hari</span>
+  </li>
+  <li class="list-group-item d-flex justify-content-between align-items-center">
+    Jenis Kelamin
+    <span class="btn btn-outline-dark">{{$patient->jeniskelamin}}</span>
+  </li>
+</ul>
+</div>
+<div class="col-lg-6">
+<ul class="list-group">
+  <li class="list-group-item d-flex justify-content-between align-items-center">
+    Nomor Rekam Medik
+    <span class="btn btn-outline-dark">{{$patient->nomorrekammedis}}</span>
+  </li>
+  <li class="list-group-item d-flex justify-content-between align-items-center">
+    Alamat
+    <span class="btn btn-outline-dark">{{$patient->alamat ?? '-'}}</span>
+  </li>
+  <li class="list-group-item d-flex justify-content-between align-items-center">
+    Tanggal Kunjungan
+    <span class="btn btn-dark">{{date(('d M Y'), strtotime($dentalrecord->tanggalkunjungan))}}</span>
+  </li>
+</ul>
+</div>
+</div>
+
+      </div>
+      <div class="card-body text-dark">
+
+        <div class="row">
+        <div class="col-lg-12 border">
+            <label class="font-weight-bold" for="keluhanutama">Keluhan Utama</label>
+            <p class="">{{$dentalrecord->keluhanutama ?? '-'}}</p>
+        </div>
+        </div>
+
+        <div class="row">
+        <div class="col-lg-2 border">
+            <label class="font-weight-bold" for="tinggibadan" name="tinggibadan">Tinggi Badan</label>
+            <p class="">{{$dentalrecord->tinggibadan ?? '-'}} cm</p>
+        </div>
+        <div class="col-lg-2 border">
+            <label class="font-weight-bold" for="beratbadan">Berat Badan</label>
+            <p class="">{{$dentalrecord->beratbadan ?? '-'}} Kg</p>
+        </div>
+        <div class="col-lg-2 border">
+            <label class="font-weight-bold" for="tekanandarah" name="tekanandarah">Tekanan Darah</label>
+            <p class="">{{$dentalrecord->tekanandarah ?? '-'}}mm/Hg</p>
+        </div>
+        <div class="col-lg-2 border">
+            <label class="font-weight-bold" for="pernafasan">Pernafasan</label>
+            <p class="">{{$dentalrecord->pernafasan ?? '-'}}/menit</p>
+        </div>
+        <div class="col-lg-2 border">
+            <label class="font-weight-bold" for="detakjantung">Detak Jantung</label>
+            <p class="">{{$dentalrecord->detakjantung ?? '-'}}/menit</p>
+        </div>
+        <div class="col-lg-2 border">
+            <label class="font-weight-bold" for="suhutubuh">Suhu Tubuh</label>
+            <p class="">{{$dentalrecord->suhutubuh ?? '-'}}Celcius</p>
+        </div>
+        </div>
+
+        <div class="row">
+          <div class="col-lg-6 border">
+                <label class="font-weight-bold" for="pemeriksaansubjektif">Pemeriksaan Subjektif</label>
+                <p class="">{{$dentalrecord->pemeriksaansubjektif ?? '-'}}</p>
+          </div>
+          <div class="col-lg-6 border">
+              <label class="font-weight-bold" for="pemeriksaanobjektif">Pemeriksaan Objektif</label>
+              <p class="">{{$dentalrecord->pemeriksaanobjektif ?? '-'}}</p>
+          </div>
+        </div>
+
+        <div class="row">
+        <div class="col-lg-12 border">
+              <label class="font-weight-bold" for="diagnosa">Diagnosa</label>
+              <p class="">{{$dentalrecord->diagnosa ?? '-'}}</p>
+        </div>
+        </div>
+
+        <div class="row">
+        <div class="col-lg-3 border">
+              <label class="font-weight-bold @error('informedconsent') text-danger @enderror" for="informedconsent">Informed Consent</label>
+              @if ($dentalrecord->informedconsent)
+              <p class="" ><a href="{{asset('storage/'.$dentalrecord->informedconsent)}}" class="" target=_blank><img src="{{asset('storage/'.$dentalrecord->informedconsent)}}" alt="" class="" style="width:100px;height:100px"></a></p>
+              @else
+              <p class="" ><img src="{{asset('storage/images/informedconsent/noimage.jpg')}}" alt="" class="" style="width:100px;height:100px"></p>
+              @endif
+        </div>
+        <div class="col-lg-9 border">
+              <label class="font-weight-bold" for="pengobatan">Obat</label>
+                <p class="">{{$dentalrecord->pengobatan ?? '-'}}</p>
+            </div>
+        </div>
+
+<form action="/dentist/dentaltreatment/{{$dentaltreatment->id}}/edit" method="post" class="" enctype="multipart/form-data">
+@csrf
+@method('patch')      
+        <div class="row mt-1">
+          <div class="col-lg-12 p-0">
+            <div class="card bg-light border-dark mb-3">
+              <div class="card-header font-weight-bold">Tindakan/tarif</div>
+              <div class="card-body">
+
+                <div class="row">
+                    <div class="col-lg-3">
+                        <textarea class="form-control mb-3 @error('gigi') is-invalid @enderror" id="gigi" rows="1" name="gigi" Placeholder="--element gigi--">{{old('gigi') ?? $dentaltreatment->gigi}}</textarea>
+                        <select name="diag_id" id="" class="form-control mb-3 @error('diag_id') is-invalid @enderror">
+                            @foreach ($diags as $diag)
+                                <option {{ old('diag_id')  ?? $dentaltreatment->diag_id === $diag->id ? 'selected':'' }} value="{{$diag->id}}">{{$diag->diagnosa}}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-lg-5">
+                        <div class="form-group">
+                            <textarea class="form-control mb-3 @error('tindakan') is-invalid @enderror" id="tindakan" rows="6" name="tindakan" Placeholder="--tindakan--">{{old('tindakan1') ?? $dentaltreatment->tindakan}}</textarea>
+                        </div>
+                    </div>
+                    <div class="col-lg-2">
+                        <label for="exampleFormControlFilebefore" class="font-weight-bold @error('before') text-danger @enderror">Foto Sebelum</label>
+                        @if ($dentaltreatment->imagebefore)
+                        <p class="" ><a href="{{asset('storage/'.$dentaltreatment->imagebefore)}}" class="" target=_blank><img src="{{asset('storage/'.$dentaltreatment->before)}}" alt="" class="" style="width:100px;height:100px"></a></p>
+                        @else
+                        <p class="" ><img src="{{asset('storage/images/before/noimagebefore.jpg')}}" alt="" class="" style="width:100px;height:100px"></p>
+                        @endif
+                        <input type="file" name="before" class="form-control-file" id="exampleFormControlFilebefore1">
+                    </div>
+                    <div class="col-lg-2">
+                        <label for="exampleFormControlFileafter" class="font-weight-bold  @error('after') text-danger @enderror">Foto Sesudah</label>
+                        @if ($dentaltreatment->imageafter)
+                        <p class="" ><a href="{{asset('storage/'.$dentaltreatment->imageafter)}}" class="" target=_blank><img src="{{asset('storage/'.$dentaltreatment->after)}}" alt="" class="" style="width:100px;height:100px"></a></p>
+                        @else
+                        <p class="" ><img src="{{asset('storage/images/after/noimageafter.jpg')}}" alt="" class="" style="width:100px;height:100px"></p>
+                        @endif
+                        <input type="file" name="after" class="form-control-file" id="exampleFormControlFileafter1">
+                    </div>
+                </div>
+                <div class="row mt-2">
+                    <div class="col-lg-12">
+                        <select name="cost_id" id="" class="form-control">
+                            @foreach ($costs as $cost)
+                            <option {{ old('cost_id') ?? $dentaltreatment->cost_id === $cost->id ? 'selected':'' }} value="{{$cost->id}}">{{$cost->tindakan}} - Rp.{{number_format($cost->harga, 0, ",", ".")}},-</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+              </div>
+              <div class="card-footer bg-transparent border-dark text-right">
+                    <button type="submit" class="btn btn-primary">EDIT</button>
+              </div>
+            </div>
+          </div>
+        </div>
+</form>  
+
+      </div>
+    </div>
+       
+        </div>
+    </div>
+</div>
+
+@endsection

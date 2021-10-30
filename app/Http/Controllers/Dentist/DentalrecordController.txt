@@ -1,0 +1,177 @@
+<?php
+
+namespace App\Http\Controllers\Dentist;
+
+use Auth;
+use App\Models\Cost;
+use App\Models\Den;
+use App\Models\Diag;
+use App\Models\Medicine;
+use App\Models\Customer;
+use App\Models\Patient;
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+
+class DentalrecordController extends Controller
+{
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index()
+    {
+        $customers = Customer::where('user_id', Auth::user()->id)->get();
+        return view('dentist.daftarpasien', [
+            'customers' => $customers
+        ]);
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create($id)
+    {
+        $dens = Den::orderBy('gigi', 'asc')->get();
+        $diags = Diag::get();
+        $costs = Cost::get();
+        $medicines = Medicine::where('aktif', 1)->get();
+        $customer = Customer::findOrFail($id);
+        $patient = Patient::findOrFail($customer->patient_id);
+        return view('dentist.forminputdentalrecord', [
+            'patient' => $patient,
+            'customer' => $customer,
+            'medicines' => $medicines,
+            'dens' => $dens,
+            'diags' => $diags,
+            'costs' => $costs
+        ]);
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(Request $request)
+    {
+        $user_id = Auth::user()->id;
+
+        $request->validate([
+            'patient_id' => 'required',
+            'keluhanutama' => 'required|max:255',
+            'tinggibadan' => 'max:5',
+            'beratbadan' => 'max:5',
+            'tekanandarah' => 'max:7',
+            'pernafasan' => 'max:3',
+            'detakjantung' => 'max:3',
+            'subutubuh' => 'max:4',
+            'pemeriksaansubjectif' => 'max:1000',
+            'pemeriksaanobjectiv' => 'max:1000',
+            'diagnosa' => 'max:500',
+            'informedconsent' => 'image|mimes:jpg,jpeg,png|max:2048',
+            'pengobatan' => 'max:100'
+        ]);
+        $patientid = $request->patient_id;
+
+        if (request()->file('informedconsent')):
+            $imginf = request()->file('informedconsent');
+            $imginformed = $imginf->storeAs("images/informedconsent", "ID{$patientid}{$imginf->getMtime()}-informedconsent.{$imginf->extension()}");
+            dump($request);echo 'dentalrecordinf';
+        else:
+            dump($request);echo 'dentalrecordnoninf';
+        endif;
+
+
+        for ($i = 1; $i < 3; $i++):
+
+            $gigi = 'den_id'.$i;
+            $diagnosa = 'diag_id'.$i;
+            $imagebefore = 'before'.$i;
+            $imageafter = 'after'.$i;
+            $tindakan = 'tindakan'.$i;
+            $costid = 'cost_id'.$i;
+
+            if ($request->$tindakan or $request->$gigi):
+                $request->validate([
+                    'den_id'.$i => 'required',
+                    'diag_id'.$i => 'required',
+                    'tindakan'.$i => 'required',
+                    'cost_id'.$i => 'required',
+                    'before'.$i => 'image|mimes:jpg,jpeg,png|max:2048',
+                    'after'.$i => 'image|mimes:jpg,jpeg,png|max:2048'
+                ]);
+
+
+                if (request()->file($imagebefore)):
+                    if (request()->file($imageafter)):
+                        $imgaf = request()->file($imageafter);
+                        $image2 = $imgaf->storeAs("images/after", "ID{$patientid}{$imgaf->getMtime()}-{$i}-after.{$imgaf->extension()}");
+                    endif;
+                    $imgbf = request()->file($imagebefore);
+                    $image1 = $imgbf->storeAs("images/before", "ID{$patientid}{$imgbf->getMtime()}-{$i}-before.{$imgbf->extension()}");
+                    dump($request);echo 'satu';
+                elseif(request()->file($imageafter)):
+                    if (request()->file($imagebefore)):
+                        $imgbf = request()->file($imagebefore);
+                        $image2 = $imgbf->storeAs("images/before", "ID{$patientid}{$imgbf->getMtime()}-{$i}-before.{$imgbf->extension()}");
+                    endif;
+                    $imgaf = request()->file($imageafter);
+                    $image2 = $imgaf->storeAs("images/after", "ID{$patientid}{$imgaf->getMtime()}-{$i}-after.{$imgaf->extension()}");
+                    dump($request);echo 'dua';
+                else:
+                    dump($request);echo 'tiga';
+                endif;
+            endif;
+        endfor;
+        
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function show($id)
+    {
+        //
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function edit($id)
+    {
+        //
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request, $id)
+    {
+        //
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy($id)
+    {
+        //
+    }
+}
