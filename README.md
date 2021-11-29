@@ -12,7 +12,7 @@ Aplikasi berbasis web yang mendata kunjungan pasien di Praktek/Klinik Dokter Gig
 - Multi user
 - Rekapitulasi jasa dokter gigi
 
-## Buit With
+## Built With
 
 - [Laravel 7.x](https://laravel.com/)
 - [Bootstrap 4.x](https://getbootstrap.com/)
